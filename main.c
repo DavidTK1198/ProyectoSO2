@@ -3,6 +3,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <pthread.h>
+#include <stdbool.h>
 /*
 UNIVERSIDAD NACIONAL DE COSTA RICA
 SISTEMAS OPERATIVOS - EIF-212
@@ -15,16 +17,27 @@ https://www.youtube.com/watch?v=YSn8_XdGH7c --> Introduction to semaphores in C
 https://www.youtube.com/watch?v=Q79uEdKNVGY ---> Practical example using semaphores 
 https://www.youtube.com/watch?v=Ra6p-Bmajlw ---> Implementing a queue in C
 */
-int cola[2];//cola que representa las sillas
+pthread_t cola[2];//cola que representa las sillas
 int contador = 0;//contador que ayuda a validar si esta vacia o esta llena
 void enqueue(int);
-int dequeue();
+pthread_t dequeue();
+void* routine(void* args);
 sem_t semaphore;
+pthread_mutex_t lock;
 
 int main(int argc, char *argv[]){  
     int valor=strtol(argv[1],NULL,10);//convertimos el numero ingresado a int
-       pthread_t estudiantes[valor];
-    sem_init(&semaphore, 0, 3);
+    pthread_t estudiantes[valor];
+    //while
+    //lock
+    //if(!estalleno)
+    //insertar
+    //if(!wakeUP)
+    //unlock
+
+    pthread_t asistente;
+    sem_init(&semaphore, 0, 4);
+    pthread_create(&asistente, NULL, &routine,(void *)&asistente);
     int i;
     for (i = 0; i < valor; i++) {
         int* a = malloc(sizeof(int));
@@ -43,6 +56,13 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
+void* atender(void* asistente){
+        while (true){
+        printf("Asistente escuchando peticiones");
+        
+        }
+        
+}
 void* routine(void* args){
  printf("(%d) Waiting in the login queue\n", *(int*)args);
     sem_wait(&semaphore);
@@ -62,7 +82,7 @@ void enqueue(int x){
     contador++;
 }
 
-int dequeue(){
+pthread_t dequeue(){
  if (contador == 0) {
         fprintf(stderr, "No hay elementos en la cola\n");
         return -1;
@@ -74,4 +94,10 @@ int dequeue(){
     }
     contador--;
     return res;
+}
+bool estaLleno(){
+    return (contador==3);
+}
+bool estaVacia(){
+    return (contador==0);
 }
